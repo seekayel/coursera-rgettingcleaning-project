@@ -18,7 +18,8 @@ library("data.table")
 
 cols<-c(1,2,3,4,5,6,41,42,43,44,45,46,81,82,83,84,85,86,121,122,123,124,125,126,161,162,163,164,165,166,201,202,214,215,227,228,240,241,253,254,266,267,268,269,270,271,345,346,347,348,349,350,424,425,426,427,428,429,503,504,516,517,529,530,542,543,555,556,557,558,559,560,561)
 
-col_names<-c("activity",
+col_names<-c("person",
+             "activity",
              "tBodyAcc-mean()-X",
              "tBodyAcc-mean()-Y",
              "tBodyAcc-mean()-Z",
@@ -93,19 +94,36 @@ col_names<-c("activity",
              "angle(Y,gravityMean)",
              "angle(Z,gravityMean)")
 
-train_activity<-fread("./data/train/y_train.txt", header=FALSE)
+fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip "
+download.file(fileURL, "./dataset.zip", method="curl")
+unzip("./dataset.zip", exdir=".")
+
+
+# Pull in train data
+train_activity<-fread('./UCI HAR Dataset/train/y_train.txt', header=FALSE)
 train_activity<-data.table(factor(train_activity$V1, levels=1:6, labels=c("WALKING","WALKING_UPSTAIRS","WALKING_DOWNSTAIRS","SITTING","STANDING","LAYING")))
 
-train_set<-cbind(train_activity, fread("./data/train/X_train.txt", select=cols, header=FALSE))
+train_person<-fread('./UCI HAR Dataset/train/subject_train.txt', header=FALSE)
+
+train_set<-cbind(train_person, train_activity, fread('./UCI HAR Dataset/train/X_train.txt', select=cols, header=FALSE))
 names(train_set) <- col_names
 
+# Pull in the test data
+test_activity<-fread('./UCI HAR Dataset/test/y_test.txt', header=FALSE)
+test_activity<-data.table(factor(test_activity$V1, levels=1:6, labels=c("WALKING","WALKING_UPSTAIRS","WALKING_DOWNSTAIRS","SITTING","STANDING","LAYING")))
 
-# test_set<-fread("./data/test/X_train.txt", select=cols, header=FALSE)
-# names(test_set) <- col_names
-# full_set <- rbind(train_set,test_set)
+test_person<-fread('./UCI HAR Dataset/test/subject_test.txt', header=FALSE)
+
+test_set<-cbind(test_person, test_activity, fread('./UCI HAR Dataset/test/X_test.txt', select=cols, header=FALSE))
+names(test_set) <- col_names
+
+
+# Merge the test & train data
+data<-rbind(train_set,test_set)
 
 
 
 
 
+write.table(data, file='./analysis_output.txt', row.name=FALSE)
 
