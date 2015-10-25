@@ -8,6 +8,19 @@ Instructions for the project can be found on the [course website]
 RScript run_analysis.R
 ```
 
+### How it Does What it Does
+
+1. Downloads the data set for analysis
+2. Unzips the dataset
+3. For each dataset test and train:
+    1. Reads in the activity code and translates to human readable string
+    2. Reads in the person identifier for each observation
+    3. Reads in the observations for the accelerometer readings
+    4. Binds together all the above info
+4. Binds the two datasets above into one dataset
+5. Summarizes the means for each activitity type by person
+6. Writes the output to a file
+
 ### Output
 
 The data code book is:
